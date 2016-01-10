@@ -1,10 +1,11 @@
 {
     "appKeys": {},
     "capabilities": [
-        ""
+        "location",
+        "configurable"
     ],
     "companyName": "thanthos@yahoo.com",
-    "longName": "ZeusClient",
+    "longName": "Pebble ElasticSearch and Kibanna Interface",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -32,7 +33,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "ZeusClient",
+    "shortName": "Pebble EK",
     "targetPlatforms": [
         "aplite",
         "basalt"

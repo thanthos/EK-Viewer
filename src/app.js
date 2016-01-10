@@ -3,17 +3,54 @@
  *
  * This is where you write your app.
  */
+'use strict';
 
 var UI = require('ui');
 var Vector2 = require('vector2');
+var base64 = require('base64');
+var Settings = require('settings');
+var ajax = require('ajax');
+var Clock = require('clock');
+
+
+Settings.config({
+  username:"",
+  password:"",
+  url:"",
+  defaultVisualization:""},
+  function(e){
+    console.log('Closed Configurable');
+    if ( e ){
+      console.log("error : "+e);  
+    }
+  });
+
+
+var user= Settings.option("username");
+var password= Settings.option("password");
+var esURL = Settings.option("url");
+var defaultSearch = Settings.option("defaultVisualization");
 
 var main = new UI.Card({
-  title: 'Pebble.js',
-  icon: 'images/menu_icon.png',
-  subtitle: 'Hello World!',
-  body: 'Press any button.'
+  title:"Elastic Search Viewer"
 });
 
+console.log("Checking Base64 "+typeof base64);
+
+if ( !user || !esURL ){
+  var x = base64.encode("readonly:readonly");
+  console.log('Not Configured but encoded x = ' + x); 
+  main.body="Not Configured";
+  
+  
+}else{
+  var hash = base64.encode(user+":"+password);
+  console.log("Password Hash is: "+hash);
+  
+  main.body("Configured");
+  
+}
+console.log("Main "+JSON.stringify(main));
 main.show();
 
 main.on('click', 'up', function(e) {
@@ -56,3 +93,5 @@ main.on('click', 'down', function(e) {
   card.body('The simplest window type in Pebble.js.');
   card.show();
 });
+
+

@@ -11,47 +11,63 @@ var base64 = require('base64');
 var Settings = require('settings');
 var ajax = require('ajax');
 var Clock = require('clock');
-
+var queryString = 'q=_type:visualization&_source=false&fields=visState';
 
 Settings.config({
-  username:"",
-  password:"",
-  url:"",
-  defaultVisualization:""},
-  function(e){
-    console.log('Closed Configurable');
-    if ( e ){
-      console.log("error : "+e);  
+  url:"http://pebble-config.herokuapp.com/config?title=ElasticSearch%20Pebble&fields=text_Username,password_Password,text_URL,text_Search" 
+},
+ function(e) {
+    console.log('opening configurable');
+    
+   //TODO: Somehow populate the option with the set values. pebble-config.herokuapp.com cannot do that.
+  },
+ function(e) {
+    var config = JSON.parse(e.response);
+    var updateConfig = {};
+    console.log('closed configurable '+JSON.stringify(config));
+   
+    for ( var i in config){
+      if ( config.hasOwnProperty[i]) {
+        if ( config[i] != "" ){
+          console.log("Setting "+i+" with "+config[i]);  
+          Settings.option(i,config[i]);
+        }
+      }
     }
   });
 
+var main = new UI.Card({title:'Pebble ElasticSearch'});
 
-var user= Settings.option("username");
-var password= Settings.option("password");
-var esURL = Settings.option("url");
+var user= Settings.option("Username");
+var password= Settings.option("Password");
+var esURL = Settings.option("URL");
 var defaultSearch = Settings.option("defaultVisualization");
 
-var main = new UI.Card({
-  title:"Elastic Search Viewer"
-});
-
-console.log("Checking Base64 "+typeof base64);
+console.log(JSON.stringify(Settings.option()));
 
 if ( !user || !esURL ){
-  var x = base64.encode("readonly:readonly");
-  console.log('Not Configured but encoded x = ' + x); 
-  main.body="Not Configured";
-  
-  
+  main.body='Not Configured';
+  main.show();
 }else{
-  var hash = base64.encode(user+":"+password);
-  console.log("Password Hash is: "+hash);
   
-  main.body("Configured");
+  var hash = base64.encode(user+":"+password);
+  console.log("Attempting to Connect to Elastic Search ");
+  main.body="Displaying Result ";
+  ajax( {
+    url: esURL+"/"+queryString,
+    type: 'application/json; charset=UTF-8',
+    headers: "Basic "+hash
+  },
+  function(data, status, request) {
+    console.log('Success  ' + data.contents.quote);
+    
+  },
+  function(error, status, request) {
+    console.log('The ajax request failed: ' + error);
+  }
+);
   
 }
-console.log("Main "+JSON.stringify(main));
-main.show();
 
 main.on('click', 'up', function(e) {
   var menu = new UI.Menu({
@@ -74,16 +90,39 @@ main.on('click', 'up', function(e) {
 });
 
 main.on('click', 'select', function(e) {
-  var wind = new UI.Window();
-  var textfield = new UI.Text({
-    position: new Vector2(0, 50),
-    size: new Vector2(144, 30),
-    font: 'gothic-24-bold',
-    text: 'Text Anywhere!',
-    textAlign: 'center'
-  });
-  wind.add(textfield);
-  wind.show();
+  var action = new UI.Card({title:'Pebble ElasticSearch'});
+  var hash = base64.encode(Settings.option("Username")+":"+Settings.option("Password"));
+  console.log("Attempting to Connect to Elastic Search ");
+  action.body="Displaying Result ";
+  ajax( {
+    url: esURL+"/"+queryString,
+    type: 'application/json; charset=UTF-8',
+    headers: "Basic "+hash
+  },
+  function(data, status, request) {
+    console.log('Success  ' + data.contents.quote);
+    
+  },
+  function(error, status, request) {
+    console.log('The ajax request failed: ' + error);
+    action.body='The ajax request failed: ' + error;
+    action.show();
+  }
+);
+  
+  
+                           
+  action.show();
+//   var wind = new UI.Window();
+//   var textfield = new UI.Text({
+//     position: new Vector2(0, 50),
+//     size: new Vector2(144, 30),
+//     font: 'gothic-24-bold',
+//     text: 'Text Anywhere!',
+//     textAlign: 'center'
+//   });
+//   wind.add(textfield);
+//   wind.show();
 });
 
 main.on('click', 'down', function(e) {

@@ -10,7 +10,7 @@ var ajax = require('ajax');
 //var Clock = require('clock');
 
 //Global Variables
-var queryString = 'q=_type:visualization&_source=false&fields=visState,title';
+var queryString = 'q=_type:visualization&_source=false&fields=visState,title&size=999999';
 var kibannaIndex = '.kibana/_search?';
 var user= Settings.option("Username");
 var esURL = Settings.option("URL");
@@ -111,6 +111,14 @@ menu.on('select',
                   query.aggs[aggs_args[i].id] = obj;
                 }
                 
+                if ( Settings.option("Minutes-to-Show"))
+                  query.query.filtered.filter.bool.must.range = {
+                    "@timestamp":{
+                      "gte":"now-"+Settings.option("Minutes-to-Show")+"m/m",
+                      "format":"epoch_milli"
+                    } 
+                  };
+                
                 elasticSearch(esURL+"/"+Settings.option("Index-to-Search")+"/_search",query,
                     function(error, status, request) {
                       msg.text="XXXX";
@@ -118,7 +126,12 @@ menu.on('select',
                     },
                     function(data, status, request) {
                       console.log("Return Data "+JSON.stringify(data.aggregations));
-                      msg.text(data.aggregations["1"].value);
+                      if ( (""+data.aggregations["1"].value).indexOf(".") != -1 ){
+                        msg.text(data.aggregations["1"].value.toFixed(2));
+                      }else{
+                         msg.text(data.aggregations["1"].value);
+                      }
+                      footer.text(new Date().toLocaleTimeString());
                       main.show();
                     });
               }  
@@ -153,9 +166,7 @@ function elasticSearch(query, payload, failure, success){
       success,
       failure
     );
-    
   }
-  
 }
 
 
@@ -174,9 +185,11 @@ function updateMenu(data, status, request){
         var instance = hitsArray[i];
         var visualization = JSON.parse(instance.fields.visState[0]);            
         if ( visualization.type == 'metric' ){
-          //console.log("Argg: "+JSON.stringify(visualization.aggs));
+          console.log("I want "+ instance._id + " because "+visualization.type);
           vis_section.items.push({title:instance._id});
           Settings.data(instance._id, visualization.aggs);
+        }else{
+          console.log("Skipping "+ instance._id+ " because "+visualization.type);
         }
       }
     }

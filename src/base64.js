@@ -1,3 +1,5 @@
+//This is a utility function to encode the authorization of the request.
+
 exports = module.exports = {
 
 // private property

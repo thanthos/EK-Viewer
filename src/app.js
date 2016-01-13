@@ -60,7 +60,7 @@ var footer = new UI.Text({
             color:"white",
             font:'gothic_24',
             textOverflow:'ellipsis',
-            borderColor:'white',
+            borderColor:'clear',
             textAlign:'center'});
 main.add(title);
 main.add(msg);

@@ -5,7 +5,7 @@
         "configurable"
     ],
     "companyName": "thanthos@yahoo.com",
-    "longName": "Pebble ElasticSearch and Kibanna Interface",
+    "longName": "Kibana Metric Viewer",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -33,7 +33,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "Pebble EK",
+    "shortName": "EK Viewer",
     "targetPlatforms": [
         "aplite",
         "basalt"

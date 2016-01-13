@@ -60,7 +60,7 @@ var footer = new UI.Text({
             color:"white",
             font:'gothic_24',
             textOverflow:'ellipsis',
-            borderColor:'clear',
+            borderColor:'white',
             textAlign:'center'});
 main.add(title);
 main.add(msg);
@@ -126,10 +126,16 @@ menu.on('select',
                     },
                     function(data, status, request) {
                       console.log("Return Data "+JSON.stringify(data.aggregations));
-                      if ( (""+data.aggregations["1"].value).indexOf(".") != -1 ){
-                        msg.text(data.aggregations["1"].value.toFixed(2));
+                      
+                      if ( typeof data.aggregations["1"].value === 'undefined' ){ //
+                        
+                        
                       }else{
-                         msg.text(data.aggregations["1"].value);
+                        if ( (""+data.aggregations["1"].value).indexOf(".") != -1 ){
+                          msg.text(data.aggregations["1"].value.toFixed(2));
+                        }else{
+                           msg.text(data.aggregations["1"].value);
+                        } 
                       }
                       footer.text(new Date().toLocaleTimeString());
                       main.show();
@@ -230,8 +236,7 @@ else{
 //Event Definition -----------------------
 main.on('click', 'up', function(e) {
   console.log("Up Click");
-  title.text("Up");
-  msg.text("1235467");
+  
 });
 
 main.on('click', 'select', function(e) {
@@ -239,11 +244,7 @@ main.on('click', 'select', function(e) {
 });
 
 main.on('click', 'down', function(e) {
-  var card = new UI.Card();
-  card.title('A Card');
-  card.subtitle('Is a Window');
-  card.body('The simplest window type in Pebble.js.');
-  card.show();
+  console.log("Up Click");
 });
 
 //End Event Definition -----------------------

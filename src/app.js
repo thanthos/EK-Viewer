@@ -10,7 +10,7 @@ var ajax = require('ajax');
 //var Clock = require('clock');
 
 //Global Variables
-var queryString = 'q=_type:visualization&_source=false&fields=visState,title&size=999999';
+var queryString = 'q=_type:visualization&_source=false&fields=visState,title&size=10000';
 var kibannaIndex = '.kibana/_search?';
 var user= Settings.option("Username");
 var esURL = Settings.option("URL");
